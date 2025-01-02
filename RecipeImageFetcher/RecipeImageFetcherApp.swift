@@ -9,9 +9,14 @@ import SwiftUI
 
 @main
 struct RecipeImageFetcherApp: App {
+    @StateObject private var fetcher = RecipeCollectionFetcher()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                ContentView()
+                    .environmentObject(fetcher)
+            }
         }
     }
 }
