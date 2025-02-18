@@ -12,7 +12,7 @@ let secondRecipe = Recipe(id: 637876, title: "Chicken 652", image: "https://img.
 let thirdRecipe = Recipe(id: 42569, title: "Chicken BBQ", image: "https://img.spoonacular.com/recipes/42569-312x231.jpg", imageType: "jpg")
 let fourthRecipe = Recipe(id: 1654723, title: "Chicken Fry", image: "https://img.spoonacular.com/recipes/1654723-312x231.png", imageType: "jpg")
 
-struct Recipe: Codable {
+struct Recipe: Codable, Hashable {
     var id: Int
     var title: String
     var image: String

@@ -22,7 +22,7 @@ struct LoadableImage: View {
                     .accessibilityLabel(Text(imageMetadata.title))
             }  else if phase.error != nil  {
                 VStack {
-                    Image("Recipe_1224783-312x231")
+                    Image("Rae-312x231")
                         .resizable()
                         .scaledToFit()
                         .frame(maxWidth: 300)
