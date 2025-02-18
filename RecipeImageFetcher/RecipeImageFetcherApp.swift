@@ -13,10 +13,19 @@ struct RecipeImageFetcherApp: App {
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack {
+            TabView {
                 ContentView()
-                    .environmentObject(fetcher)
+                    .tabItem {
+                        Image(systemName: "circle.fill")
+                        Text("Display")
+                    }
+                ApiKeyEntry()
+                    .tabItem {
+                        Image(systemName: "key")
+                        Text("API Key")
+                    }
             }
+            .environmentObject(fetcher)
         }
     }
 }

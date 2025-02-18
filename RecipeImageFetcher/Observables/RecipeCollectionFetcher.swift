@@ -11,7 +11,7 @@ class RecipeCollectionFetcher: ObservableObject {
     @Published var imageData: RecipeCollection?
     @Published var currentRecipe = defaultRecipe
     
-    let urlString = "https://api.spoonacular.com/recipes/complexSearch?query=chicken&number=4&apiKey="
+    let urlString = "https://api.spoonacular.com/recipes/complexSearch?query=chicken&number=4" + "&" + (UserDefaults.standard.string(forKey: "skey") ?? "")
     
     enum FetchError: Error {
         case badRequest
@@ -20,6 +20,7 @@ class RecipeCollectionFetcher: ObservableObject {
     
     func fetchData() async
     throws  {
+        if UserDefaults.standard.string(forKey: "skey") == "" { return }
         guard let url = URL(string: urlString) else { return }
         
         let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))

@@ -6,17 +6,19 @@
 //
 
 import SwiftUI
+import MessageUI
 
 struct ContentView: View, Sendable {
-        @EnvironmentObject var fetcher: RecipeCollectionFetcher
-        
-        @State private var memeText = ""
-        @State private var textSize = 60.0
-        @State private var textColor = Color.white
-
-        @FocusState private var isFocused: Bool
-
-        var body: some View {
+    @EnvironmentObject var fetcher: RecipeCollectionFetcher
+    
+    @State private var memeText = ""
+    @State private var textSize = 60.0
+    @State private var textColor = Color.white
+    
+    @FocusState private var isFocused: Bool
+    
+    var body: some View {
+        NavigationStack {
             VStack(alignment: .center) {
                 Spacer()
                 LoadableImage(imageMetadata: fetcher.currentRecipe)
@@ -34,7 +36,7 @@ struct ContentView: View, Sendable {
                         .multilineTextAlignment(.center)
                     }
                     .frame(minHeight: 150)
-
+                
                 Spacer()
                 
                 if !memeText.isEmpty {
@@ -58,7 +60,7 @@ struct ContentView: View, Sendable {
                     .frame(maxWidth: 325)
                     
                 }
-
+                
                 HStack {
                     Button {
                         if let randomImage = fetcher.imageData!.results.randomElement() {
@@ -75,7 +77,7 @@ struct ContentView: View, Sendable {
                     }
                     .buttonStyle(.bordered)
                     .controlSize(.large)
-
+                    
                     Button {
                         isFocused = true
                     } label: {
@@ -97,9 +99,10 @@ struct ContentView: View, Sendable {
             .task {
                 try? await fetcher.fetchData()
             }
-            .navigationTitle("Meme Creator")
+            .navigationTitle("Image Fetcher")
         }
     }
+}
 
 #Preview {
     ContentView()
