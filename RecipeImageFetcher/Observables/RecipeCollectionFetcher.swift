@@ -11,20 +11,48 @@ class RecipeCollectionFetcher: ObservableObject {
     @Published var imageData: RecipeCollection?
     @Published var currentRecipe = defaultRecipe
     
-    let urlString = "https://api.spoonacular.com/recipes/complexSearch?query=chicken&number=4" + "&" + (UserDefaults.standard.string(forKey: "skey") ?? "")
+    private var searchString: String = ""
+    let key = UserDefaults.standard.value(forKey: "SpoonacularKey") ?? ""
+    
+    var urlString = "https://api.spoonacular.com/recipes/complexSearch?query=chicken&number=4"
     
     enum FetchError: Error {
         case badRequest
         case badJSON
     }
     
-    func fetchData() async
+    func fetchData(searchTerm: String) async
     throws  {
-        if UserDefaults.standard.string(forKey: "skey") == "" { return }
-        guard let url = URL(string: urlString) else { return }
+        if key as! String == "" {
+            print("key is empty")
+            return
+        }
+        searchString = searchTerm.replacingOccurrences(of: " ", with: ",+")
+        
+        if searchString.isEmpty {
+            print("searchString is empty")
+            return
+        }
+        
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.spoonacular.com"
+        urlComponents.path = "/recipes/complexSearch"
+        
+        var queryItems: [URLQueryItem] = []
+        queryItems.append(URLQueryItem(name: "query", value: searchString))
+        queryItems.append(URLQueryItem(name: "number", value: "4"))
+        urlComponents.queryItems = queryItems
+        urlComponents.query! += "\(key)"
+        guard let url = urlComponents.url else {
+            print("could not create url")
+            return
+        }
+        print("url being sent is: ", url.absoluteString)
         
         let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw FetchError.badRequest }
+        print("data fetched is : ", data.debugDescription)
         
         Task { @MainActor in
             imageData = try JSONDecoder().decode(RecipeCollection.self, from: data)

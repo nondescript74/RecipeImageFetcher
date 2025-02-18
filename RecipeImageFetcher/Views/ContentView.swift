@@ -12,32 +12,29 @@ struct ContentView: View, Sendable {
     @EnvironmentObject var fetcher: RecipeCollectionFetcher
     
     @State private var memeText = ""
-    @State private var textSize = 60.0
-    @State private var textColor = Color.white
+    @State private var textSize = 12.0
+    @State private var textColor = Color.blue
     
     @FocusState private var isFocused: Bool
     
     var body: some View {
         NavigationStack {
             VStack(alignment: .center) {
-                Spacer()
                 LoadableImage(imageMetadata: fetcher.currentRecipe)
-                    .overlay(alignment: .bottom) {
-                        TextField(
-                            "Meme Text",
-                            text: $memeText,
-                            prompt: Text("")
-                        )
-                        .focused($isFocused)
-                        .font(.system(size: textSize, weight: .heavy))
-                        .shadow(radius: 10)
-                        .foregroundColor(textColor)
-                        .padding()
-                        .multilineTextAlignment(.center)
-                    }
-                    .frame(minHeight: 150)
                 
-                Spacer()
+                TextField(
+                    "Meme Text",
+                    text: $memeText,
+                    prompt: Text("Enter search text here...")
+                )
+                .focused($isFocused)
+                .font(.system(size: textSize))
+                .shadow(radius: 10)
+                .foregroundColor(textColor)
+                .padding()
+                .multilineTextAlignment(.trailing)
+                                
+
                 
                 if !memeText.isEmpty {
                     VStack {
@@ -63,9 +60,13 @@ struct ContentView: View, Sendable {
                 
                 HStack {
                     Button {
-                        if let randomImage = fetcher.imageData!.results.randomElement() {
-                            fetcher.currentRecipe = randomImage
+                        Task {
+                            try! await fetcher.fetchData(searchTerm: memeText)
+                            if let randomImage = fetcher.imageData!.results.randomElement() {
+                                fetcher.currentRecipe = randomImage
+                            }
                         }
+                        
                     } label: {
                         VStack {
                             Image(systemName: "photo.on.rectangle.angled")
@@ -74,7 +75,7 @@ struct ContentView: View, Sendable {
                             Text("Shuffle Photo")
                         }
                         .frame(maxWidth: 180, maxHeight: .infinity)
-                    }
+                    }.disabled(memeText.isEmpty)
                     .buttonStyle(.bordered)
                     .controlSize(.large)
                     
@@ -96,9 +97,7 @@ struct ContentView: View, Sendable {
                 .frame(maxHeight: 180, alignment: .center)
             }
             .padding()
-            .task {
-                try? await fetcher.fetchData()
-            }
+            .environmentObject(fetcher)
             .navigationTitle("Image Fetcher")
         }
     }
