@@ -60,7 +60,8 @@ struct ContentView: View, Sendable {
                         }.padding()
                         Picker("Number", selection: $numberOfRecipes) {
                             ForEach(0..<16) { index in
-                                Text(index.description).fontWeight(.light)
+                                Text(index.description)
+                                    .fontWeight(.light)
                             }
                         }.padding()
                     }
