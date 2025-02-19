@@ -5,6 +5,7 @@
 //  Created by Zahirudeen Premji on 1/2/25.
 //
 
+import Foundation
 import SwiftUI
 import MessageUI
 
@@ -14,7 +15,15 @@ struct ContentView: View, Sendable {
     @State private var memeText = ""
     @State private var textSize = 12.0
     @State private var textColor = Color.blue
+    @State private var xectionName: String = "Indian"
+    @State private var numberOfRecipes: Int = 4
     
+    func getBookSectionNames() -> [String] {
+        let namesOfCuisines = Bundle.main.decode([Cuisine].self, from: "cuisines.json").sorted(by: {$0.name < $1.name})
+        var names: [String] = []
+        namesOfCuisines.forEach {names.append($0.name)}
+        return names
+    }
     
     var body: some View {
         NavigationStack {
@@ -42,11 +51,24 @@ struct ContentView: View, Sendable {
                     .foregroundColor(textColor)
                     .padding()
                     .multilineTextAlignment(.center)
+                    
+                    HStack {
+                        Picker("Select", selection: $xectionName) {
+                            ForEach(getBookSectionNames(), id: \.self) { bookSection in
+                                Text(bookSection).fontWeight(.light)
+                            }
+                        }.padding()
+                        Picker("Number", selection: $numberOfRecipes) {
+                            ForEach(0..<16) { index in
+                                Text(index.description).fontWeight(.light)
+                            }
+                        }.padding()
+                    }
           
                     HStack {
                         Button {
                             Task {
-                                try! await fetcher.fetchData(searchTerm: memeText)
+                                try! await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes)
                                 if let randomImage = fetcher.imageData!.results.randomElement() {
                                     fetcher.currentRecipe = randomImage
                                 }
@@ -60,7 +82,7 @@ struct ContentView: View, Sendable {
                                     .padding(.bottom, 4)
                                 Text("Get Recipe")
                             }
-                            .frame(maxWidth: 180, maxHeight: .infinity)
+                            .frame(maxWidth: 150, maxHeight: 100)
                         }.disabled(memeText.isEmpty)
                             .buttonStyle(.bordered)
                             .controlSize(.large)
@@ -79,4 +101,26 @@ struct ContentView: View, Sendable {
 #Preview {
     ContentView()
         .environmentObject(RecipeCollectionFetcher())
+}
+
+
+private var decoder: JSONDecoder = JSONDecoder()
+private var encoder: JSONEncoder = JSONEncoder()
+
+extension Bundle {
+    func decode<T: Decodable>(_ type: T.Type, from file: String) -> T {
+        guard let url = self.url(forResource: file, withExtension: nil) else {
+            fatalError("Failed to locate \(file) in bundle.")
+        }
+        
+        guard let data = try? Data(contentsOf: url) else {
+            fatalError("Failed to load \(file) from bundle.")
+        }
+
+        guard let decoded = try? decoder.decode(T.self, from: data) else {
+            fatalError("Failed to decode \(file) from bundle.")
+        }
+        
+        return decoded
+    }
 }

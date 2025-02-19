@@ -21,7 +21,8 @@ class RecipeCollectionFetcher: ObservableObject {
         case badJSON
     }
     
-    func fetchData(searchTerm: String) async
+    
+    func fetchData(searchTerm: String, cuisine: String) async
     throws  {
         if key as! String == "" {
             print("key is empty")
@@ -42,6 +43,47 @@ class RecipeCollectionFetcher: ObservableObject {
         var queryItems: [URLQueryItem] = []
         queryItems.append(URLQueryItem(name: "query", value: searchString))
         queryItems.append(URLQueryItem(name: "number", value: "4"))
+        queryItems.append(URLQueryItem(name: "cuisine", value: cuisine))
+        urlComponents.queryItems = queryItems
+        urlComponents.query! += "\(key)"
+        guard let url = urlComponents.url else {
+            print("could not create url")
+            return
+        }
+        print("url being sent is: ", url.absoluteString)
+        
+        let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw FetchError.badRequest }
+        print("data fetched is : ", data.debugDescription)
+        
+        Task { @MainActor in
+            imageData = try JSONDecoder().decode(RecipeCollection.self, from: data)
+            print("The number of recipes fetched is : \(imageData!.results.count)")
+        }
+    }
+    
+    func fetchData(searchTerm: String, cuisine: String, number: Int) async
+    throws  {
+        if key as! String == "" {
+            print("key is empty")
+            return
+        }
+        searchString = searchTerm.replacingOccurrences(of: " ", with: ",+")
+        
+        if searchString.isEmpty {
+            print("searchString is empty")
+            return
+        }
+        
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.spoonacular.com"
+        urlComponents.path = "/recipes/complexSearch"
+        
+        var queryItems: [URLQueryItem] = []
+        queryItems.append(URLQueryItem(name: "query", value: searchString))
+        queryItems.append(URLQueryItem(name: "number", value: number.description))
+        queryItems.append(URLQueryItem(name: "cuisine", value: cuisine))
         urlComponents.queryItems = queryItems
         urlComponents.query! += "\(key)"
         guard let url = urlComponents.url else {

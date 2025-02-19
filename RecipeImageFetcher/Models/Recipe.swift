@@ -7,10 +7,12 @@
 
 import SwiftUI
 
-let defaultRecipe = Recipe(id: 122478, title: "Chicken 65", image: "https://img.spoonacular.com/recipes/1224783-312x231.jpg", imageType: "jpg")
-let secondRecipe = Recipe(id: 637876, title: "Chicken 652", image: "https://img.spoonacular.com/recipes/637876-312x231.jpg", imageType: "jpg")
-let thirdRecipe = Recipe(id: 42569, title: "Chicken BBQ", image: "https://img.spoonacular.com/recipes/42569-312x231.jpg", imageType: "jpg")
-let fourthRecipe = Recipe(id: 1654723, title: "Chicken Fry", image: "https://img.spoonacular.com/recipes/1654723-312x231.png", imageType: "jpg")
+let defaultRecipe = Recipe(id: 715538, title: "What to make for dinner tonight?? Bruschetta Style Pork & Pasta", image: "https://img.spoonacular.com/recipes/715538-312x231.jpg", imageType: "jpg")
+
+//let defaultRecipe = Recipe(id: 122478, title: "Chicken 65", image: "https://img.spoonacular.com/recipes/1224783-312x231.jpg", imageType: "jpg")
+//let secondRecipe = Recipe(id: 637876, title: "Chicken 652", image: "https://img.spoonacular.com/recipes/637876-312x231.jpg", imageType: "jpg")
+//let thirdRecipe = Recipe(id: 42569, title: "Chicken BBQ", image: "https://img.spoonacular.com/recipes/42569-312x231.jpg", imageType: "jpg")
+//let fourthRecipe = Recipe(id: 1654723, title: "Chicken Fry", image: "https://img.spoonacular.com/recipes/1654723-312x231.png", imageType: "jpg")
 
 struct Recipe: Codable, Hashable {
     var id: Int
@@ -24,4 +26,16 @@ struct RecipeCollection: Codable {
     var number: Int
     var results: [Recipe]
     var totalResults: Int
+}
+
+struct Cuisine: Codable, Hashable, Equatable {
+    var name: String
+    
+    static func == (lhs: Cuisine, rhs: Cuisine) -> Bool {
+        if lhs.name == rhs.name {
+            return true
+        } else {
+            return false
+        }
+    }
 }
