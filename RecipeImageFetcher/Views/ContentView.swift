@@ -57,13 +57,14 @@ struct ContentView: View, Sendable {
                             ForEach(getBookSectionNames(), id: \.self) { bookSection in
                                 Text(bookSection).fontWeight(.light)
                             }
-                        }.padding()
+                        }.padding(.leading)
+                        Spacer()
                         Picker("Number", selection: $numberOfRecipes) {
                             ForEach(0..<16) { index in
                                 Text(index.description)
                                     .fontWeight(.light)
                             }
-                        }.padding()
+                        }.padding(.trailing)
                     }
           
                     HStack {
