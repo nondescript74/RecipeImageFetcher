@@ -6,19 +6,44 @@
 //
 
 import SwiftUI
+import Foundation
 
-let defaultRecipe = Recipe(id: 715538, title: "What to make for dinner tonight?? Bruschetta Style Pork & Pasta", image: "https://img.spoonacular.com/recipes/715538-312x231.jpg", imageType: "jpg")
+let defaultRecipe = Bundle.main.decode(Recipe.self, from: "defaultRecipe.json")
+// Recipe(id: 715538, title: "What to make for dinner tonight?? Bruschetta Style Pork & Pasta", image: "https://img.spoonacular.com/recipes/715538-312x231.jpg", imageType: "jpg")
 
-//let defaultRecipe = Recipe(id: 122478, title: "Chicken 65", image: "https://img.spoonacular.com/recipes/1224783-312x231.jpg", imageType: "jpg")
-//let secondRecipe = Recipe(id: 637876, title: "Chicken 652", image: "https://img.spoonacular.com/recipes/637876-312x231.jpg", imageType: "jpg")
-//let thirdRecipe = Recipe(id: 42569, title: "Chicken BBQ", image: "https://img.spoonacular.com/recipes/42569-312x231.jpg", imageType: "jpg")
-//let fourthRecipe = Recipe(id: 1654723, title: "Chicken Fry", image: "https://img.spoonacular.com/recipes/1654723-312x231.png", imageType: "jpg")
-
-struct Recipe: Codable, Hashable {
+struct Result: Codable, Hashable {
     var id: Int
     var title: String
     var image: String
     var imageType: String
+}
+
+struct Recipe: Codable, Hashable {
+    
+    var id: Int
+    var image: String
+    var imageType, title: String
+    var readyInMinutes, servings: Int
+    var sourceUrl: String
+    var vegetarian, vegan, glutenFree, dairyFree: Bool
+    var veryHealthy, cheap, veryPopular, sustainable: Bool
+    var lowFodmap: Bool
+    var weightWatcherSmartPoints: Int
+    var gaps: String
+    var preparationMinutes, cookingMinutes, aggregateLikes, healthScore: Int
+    var creditsText: String
+    var license: String?
+    var sourceName: String
+    var pricePerServing: Double
+    var summary: String
+    var cuisines, dishTypes, diets, occasions: [String]
+    var spoonacularScore: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case id, image, imageType, title, readyInMinutes, servings
+        case sourceUrl
+        case vegetarian, vegan, glutenFree, dairyFree, veryHealthy, cheap, veryPopular, sustainable, lowFodmap, weightWatcherSmartPoints, gaps, preparationMinutes, cookingMinutes, aggregateLikes, healthScore, creditsText, license, sourceName, pricePerServing, summary, cuisines, dishTypes, diets, occasions, spoonacularScore
+    }
 }
 
 struct RecipeCollection: Codable {
@@ -39,3 +64,4 @@ struct Cuisine: Codable, Hashable, Equatable {
         }
     }
 }
+

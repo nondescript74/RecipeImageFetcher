@@ -84,6 +84,7 @@ class RecipeCollectionFetcher: ObservableObject {
         queryItems.append(URLQueryItem(name: "query", value: searchString))
         queryItems.append(URLQueryItem(name: "number", value: number.description))
         queryItems.append(URLQueryItem(name: "cuisine", value: cuisine))
+        queryItems.append(URLQueryItem(name: "addRecipeInformation", value: "True"))
         urlComponents.queryItems = queryItems
         urlComponents.query! += "\(key)"
         guard let url = urlComponents.url else {
