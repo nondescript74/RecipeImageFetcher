@@ -17,7 +17,7 @@ struct ContentView: View, Sendable {
     @State private var textColor = Color.blue
     @State private var xectionName: String = "Indian"
     @State private var numberOfRecipes: Int = 4
-    @State private var showRecipeInfo: Bool = false
+    @State private var showRecipeInfo: String = "No Info"
     
     fileprivate func getBookSectionNames() -> [String] {
         let namesOfCuisines = Bundle.main.decode([Cuisine].self, from: "cuisines.json").sorted(by: {$0.name < $1.name})
@@ -27,7 +27,7 @@ struct ContentView: View, Sendable {
     }
     
     fileprivate func getChoices() -> [String] {
-        return ["Info", "No Info"]
+        return ["No Info", "Info"]
     }
     
     var body: some View {
@@ -35,6 +35,7 @@ struct ContentView: View, Sendable {
             ScrollView {
                 VStack(alignment: .center) {
                     if fetcher.imageData != nil {
+                        Text("Total Results: \(fetcher.imageData!.totalResults)")
                         ForEach(fetcher.imageData!.results, id: \.self) { imgdata in
                             LoadableImage(imageMetadata: imgdata)
                                 .frame(width: 312, height: 231)
@@ -85,7 +86,7 @@ struct ContentView: View, Sendable {
                     HStack {
                         Button {
                             Task {
-                                try! await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes, showRecipeInfo: true)
+                                try! await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes, showInfo: showRecipeInfo == "No Info" ? false : true)
                                 
                                 memeText = ""
                             }
