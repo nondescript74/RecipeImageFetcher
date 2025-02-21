@@ -23,21 +23,21 @@ struct Recipe: Codable, Hashable {
     var id: Int
     var image: String
     var imageType, title: String
-    var readyInMinutes, servings: Int
-    var sourceUrl: String
-    var vegetarian, vegan, glutenFree, dairyFree: Bool
-    var veryHealthy, cheap, veryPopular, sustainable: Bool
-    var lowFodmap: Bool
-    var weightWatcherSmartPoints: Int
-    var gaps: String
-    var preparationMinutes, cookingMinutes, aggregateLikes, healthScore: Int
-    var creditsText: String
+    var readyInMinutes, servings: Int?
+    var sourceUrl: String?
+    var vegetarian, vegan, glutenFree, dairyFree: Bool?
+    var veryHealthy, cheap, veryPopular, sustainable: Bool?
+    var lowFodmap: Bool?
+    var weightWatcherSmartPoints: Int?
+    var gaps: String?
+    var preparationMinutes, cookingMinutes, aggregateLikes, healthScore: Int?
+    var creditsText: String?
     var license: String?
-    var sourceName: String
-    var pricePerServing: Double
-    var summary: String
-    var cuisines, dishTypes, diets, occasions: [String]
-    var spoonacularScore: Double
+    var sourceName: String?
+    var pricePerServing: Double?
+    var summary: String?
+    var cuisines, dishTypes, diets, occasions: [String]?
+    var spoonacularScore: Double?
     
     enum CodingKeys: String, CodingKey {
         case id, image, imageType, title, readyInMinutes, servings

@@ -17,12 +17,17 @@ struct ContentView: View, Sendable {
     @State private var textColor = Color.blue
     @State private var xectionName: String = "Indian"
     @State private var numberOfRecipes: Int = 4
+    @State private var showRecipeInfo: Bool = false
     
-    func getBookSectionNames() -> [String] {
+    fileprivate func getBookSectionNames() -> [String] {
         let namesOfCuisines = Bundle.main.decode([Cuisine].self, from: "cuisines.json").sorted(by: {$0.name < $1.name})
         var names: [String] = []
         namesOfCuisines.forEach {names.append($0.name)}
         return names
+    }
+    
+    fileprivate func getChoices() -> [String] {
+        return ["Info", "No Info"]
     }
     
     var body: some View {
@@ -65,15 +70,23 @@ struct ContentView: View, Sendable {
                                     .fontWeight(.light)
                             }
                         }.padding(.trailing)
+                        Spacer()
+                        
+                        Picker("Information", selection: $showRecipeInfo) {
+                            ForEach(getChoices(), id: \.self) { text in
+                                Text(text)
+                                    .fontWeight(.light)
+                            }
+                        }.padding(.trailing)
+                        
+                        
                     }
-          
+                    
                     HStack {
                         Button {
                             Task {
-                                try! await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes)
-                                if let randomImage = fetcher.imageData!.results.randomElement() {
-                                    fetcher.currentRecipe = randomImage
-                                }
+                                try! await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes, showRecipeInfo: true)
+                                
                                 memeText = ""
                             }
                             
@@ -118,7 +131,7 @@ extension Bundle {
         guard let data = try? Data(contentsOf: url) else {
             fatalError("Failed to load \(file) from bundle.")
         }
-
+        
         guard let decoded = try? decoder.decode(T.self, from: data) else {
             fatalError("Failed to decode \(file) from bundle.")
         }
