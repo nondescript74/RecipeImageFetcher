@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import os
 
 class RecipeCollectionFetcher: ObservableObject {
     @Published var imageData: RecipeCollection?
@@ -14,7 +15,7 @@ class RecipeCollectionFetcher: ObservableObject {
     private var searchString: String = ""
     let key = UserDefaults.standard.value(forKey: "SpoonacularKey") ?? ""
     
-//    var urlString = "https://api.spoonacular.com/recipes/complexSearch?query=chicken&number=4"
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.example.RecipeImageFetcher", category: "RecipeCollectionFetcher")
     
     enum FetchError: Error {
         case badRequest
@@ -24,13 +25,13 @@ class RecipeCollectionFetcher: ObservableObject {
     func fetchData(searchTerm: String, cuisine: String, number: Int, showInfo: Bool) async
     throws   {
         if key as! String == "" {
-            print("key is empty")
+            logger.log("key is empty, cannot fetch data")
             return
         }
         searchString = searchTerm.replacingOccurrences(of: " ", with: ",+")
         
         if searchString.isEmpty {
-            print("searchString is empty")
+            logger.log( "searchString is empty , cannot fetch data")
             return
         }
         
@@ -47,26 +48,27 @@ class RecipeCollectionFetcher: ObservableObject {
         urlComponents.queryItems = queryItems
         urlComponents.query! += "\(key)"
         guard let url = urlComponents.url else {
-            print("could not create url")
+            logger.log( "could not create url , cannot fetch data")
             return
         }
-        print("url being sent is: ", url.absoluteString)
         
         let (data, response) = try await URLSession.shared.data(for: URLRequest(url: url))
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw FetchError.badRequest }
-        print("data fetched is : ", data.debugDescription)
+        logger.log( "data fetched is : \(data.debugDescription)")
         
         Task { @MainActor in
             imageData = try JSONDecoder().decode(RecipeCollection.self, from: data)
             if imageData == nil {
-                print("imageData is nil")
+                logger.log( "imageData is nil")
             } else {
-                print("imageData is not nil")
-                print("The number of recipes fetched is : \(imageData!.results.count)")
+                logger.log( "imageData is not nil")
+                logger.log( "The number of recipes fetched is : \(self.imageData!.results.count)")
                 if imageData!.results.count > 0 {
                     currentRecipe = imageData!.results[0]
+                    logger.log("currentRecipe set to first fetched recipe")
                 } else {
                     currentRecipe = defaultRecipe
+                    logger.log("No recipes found, currentRecipe set to default recipe")
                 }
             }
         }

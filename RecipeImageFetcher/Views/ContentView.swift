@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import MessageUI
+import os
 
 struct ContentView: View, Sendable {
     @EnvironmentObject var fetcher: RecipeCollectionFetcher
@@ -29,6 +30,8 @@ struct ContentView: View, Sendable {
     fileprivate func getChoices() -> [String] {
         return ["No Info", "Info"]
     }
+    
+    fileprivate let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.example.RecipeImageFetcher", category: "ContentView")
     
     var body: some View {
         NavigationStack {

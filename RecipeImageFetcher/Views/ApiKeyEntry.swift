@@ -6,39 +6,33 @@
 //
 
 import SwiftUI
+import os
 
 struct ApiKeyEntry: View {
     @State fileprivate var apiKey: String = ""
     let skey = "SpoonacularKey"
     
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.example.RecipeImageFetcher", category: "ApiKeyEntry")
+    
     private enum msgs: String {
-        case kv = "ApiKeyEntry: "
-        case kvset = "apiKey set "
         case key = "Please enter your api key"
         case ksave = "Save Api Key"
         case kx = "key: "
         case kno = "No Key"
-        case kdidnot = "did not set key"
     }
     
     @MainActor
     fileprivate func setApiKey(key: String) {
         if apiKey.isEmpty ||  apiKey == UserDefaults.standard.string(forKey: skey) {
             apiKey = ""
-#if DEBUG
-            print(msgs.kv.rawValue + msgs.kdidnot.rawValue)
-#endif
+            logger.log("ApiKeyEntry: No Key is set")
             return
         }
         DispatchQueue.main.async {
             UserDefaults.standard.set(apiKey, forKey: skey)
             apiKey = ""
-#if DEBUG
-            print(msgs.kv.rawValue + msgs.kvset.rawValue + UserDefaults.standard.string(forKey: skey)!)
-#endif
+            logger.log("ApiKeyEntry: apiKey was set \(apiKey, privacy: .private)")
         }
-        
-        
     }
     
     var body: some View {
