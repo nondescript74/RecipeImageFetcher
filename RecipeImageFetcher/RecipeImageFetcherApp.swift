@@ -9,23 +9,25 @@ import SwiftUI
 
 @main
 struct RecipeImageFetcherApp: App {
-    @StateObject private var fetcher = RecipeCollectionFetcher()
+    @State private var fetcher = RecipeCollectionFetcher()
     
     var body: some Scene {
         WindowGroup {
-            TabView {
-                ContentView()
-                    .tabItem {
-                        Image(systemName: "circle.fill")
-                        Text("Display")
-                    }
-                ApiKeyEntry()
-                    .tabItem {
-                        Image(systemName: "key")
-                        Text("API Key")
-                    }
+            NavigationStack {
+                TabView {
+                    ContentView()
+                        .tabItem {
+                            Image(systemName: "circle.fill")
+                            Text("Display")
+                        }
+                    ApiKeyEntry()
+                        .tabItem {
+                            Image(systemName: "key")
+                            Text("API Key")
+                        }
+                }
+                .environment(fetcher)
             }
-            .environmentObject(fetcher)
         }
     }
 }

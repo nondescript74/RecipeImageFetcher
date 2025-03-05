@@ -6,16 +6,16 @@
 //
 
 import Foundation
-import os
+import OSLog
 
-class RecipeCollectionFetcher: ObservableObject {
-    @Published var imageData: RecipeCollection?
-    @Published var currentRecipe = defaultRecipe
+@Observable class RecipeCollectionFetcher {
+    var imageData: RecipeCollection?
+    var currentRecipe = defaultRecipe
     
     private var searchString: String = ""
     let key = UserDefaults.standard.value(forKey: "SpoonacularKey") ?? ""
     
-    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.example.RecipeImageFetcher", category: "RecipeCollectionFetcher")
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.headydiscy.RecipeImageFetcher", category: "RecipeCollectionFetcher")
     
     enum FetchError: Error {
         case badRequest

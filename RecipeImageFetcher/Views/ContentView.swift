@@ -8,10 +8,10 @@
 import Foundation
 import SwiftUI
 import MessageUI
-import os
+import OSLog
 
 struct ContentView: View, Sendable {
-    @EnvironmentObject var fetcher: RecipeCollectionFetcher
+    @Environment(RecipeCollectionFetcher.self) private var fetcher
     
     @State private var memeText = ""
     @State private var textSize = 12.0
@@ -24,6 +24,7 @@ struct ContentView: View, Sendable {
         let namesOfCuisines = Bundle.main.decode([Cuisine].self, from: "cuisines.json").sorted(by: {$0.name < $1.name})
         var names: [String] = []
         namesOfCuisines.forEach {names.append($0.name)}
+        logger.info("returning \(names)")
         return names
     }
     
@@ -31,7 +32,7 @@ struct ContentView: View, Sendable {
         return ["No Info", "Info"]
     }
     
-    fileprivate let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.example.RecipeImageFetcher", category: "ContentView")
+    fileprivate let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.headydiscy.RecipeImageFetcher", category: "ContentView")
     
     var body: some View {
         NavigationStack {
@@ -43,11 +44,14 @@ struct ContentView: View, Sendable {
                             LoadableImage(imageMetadata: imgdata)
                                 .frame(width: 312, height: 231)
                             Text(imgdata.title)
+                            Text("Recipe ID: \(imgdata.id)")
+                            let _ = self.logger.info("\(imgdata.title)")
                         } .padding()
                     } else {
                         LoadableImage(imageMetadata: fetcher.currentRecipe)
                             .frame(width: 312, height: 231)
                         Text(fetcher.currentRecipe.title)
+                        let _ = logger.info("\(fetcher.currentRecipe.title)")
                     }
                     
                     TextField(
@@ -89,9 +93,16 @@ struct ContentView: View, Sendable {
                     HStack {
                         Button {
                             Task {
-                                try! await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes, showInfo: showRecipeInfo == "No Info" ? false : true)
-                                
-                                memeText = ""
+                                logger.info("Fetching data...")
+                                do {
+                                    try await fetcher.fetchData(searchTerm: memeText, cuisine: xectionName, number: numberOfRecipes, showInfo: showRecipeInfo == "No Info" ? false : true)
+                                    
+                                    memeText = ""
+                                    logger.info("Fetched data, memeText reset")
+                                } catch {
+                                    logger.error("Error fetching data: \(error)")
+                                    //
+                                }
                             }
                             
                         } label: {
@@ -111,7 +122,7 @@ struct ContentView: View, Sendable {
                 }
             }
             
-            .environmentObject(fetcher)
+            .environment(fetcher)
             .navigationTitle("Image Fetcher")
         }
     }
@@ -119,7 +130,6 @@ struct ContentView: View, Sendable {
 
 #Preview {
     ContentView()
-        .environmentObject(RecipeCollectionFetcher())
 }
 
 

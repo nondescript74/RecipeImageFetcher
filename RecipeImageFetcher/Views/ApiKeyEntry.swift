@@ -6,13 +6,13 @@
 //
 
 import SwiftUI
-import os
+import OSLog
 
 struct ApiKeyEntry: View {
     @State fileprivate var apiKey: String = ""
     let skey = "SpoonacularKey"
     
-    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.example.RecipeImageFetcher", category: "ApiKeyEntry")
+    let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.headydiscy.RecipeImageFetcher", category: "ApiKeyEntry")
     
     private enum msgs: String {
         case key = "Please enter your api key"
@@ -25,13 +25,13 @@ struct ApiKeyEntry: View {
     fileprivate func setApiKey(key: String) {
         if apiKey.isEmpty ||  apiKey == UserDefaults.standard.string(forKey: skey) {
             apiKey = ""
-            logger.log("ApiKeyEntry: No Key is set")
+            logger.log("No Key is set")
             return
         }
         DispatchQueue.main.async {
             UserDefaults.standard.set(apiKey, forKey: skey)
             apiKey = ""
-            logger.log("ApiKeyEntry: apiKey was set \(apiKey, privacy: .private)")
+            logger.log("apiKey was set \(apiKey, privacy: .private)")
         }
     }
     
@@ -44,6 +44,7 @@ struct ApiKeyEntry: View {
                     Button(action: {
                         // What to perform
                         setApiKey(key: apiKey)
+                        logger.info("User set apiKey")
                     }) {
                         // How the button looks like
                         Rectangle()
