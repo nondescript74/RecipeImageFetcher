@@ -7,6 +7,7 @@
 
 import Foundation
 import OSLog
+import Combine
 
 @Observable class RecipeCollectionFetcher {
     var imageData: RecipeCollection?

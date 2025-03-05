@@ -7,8 +7,8 @@
 
 import Foundation
 import SwiftUI
-import MessageUI
 import OSLog
+import Combine
 
 struct ContentView: View, Sendable {
     @Environment(RecipeCollectionFetcher.self) private var fetcher

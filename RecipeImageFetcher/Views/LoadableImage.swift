@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct LoadableImage: View {
     var imageMetadata: Recipe
